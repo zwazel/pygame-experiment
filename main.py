@@ -75,9 +75,9 @@ while True:
 
         # Move the black square based on keyboard input
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a] and black_square_x > 0:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT] and black_square_x > 0:
             black_square_x -= black_square_speed
-        if keys[pygame.K_d] and black_square_x < width - black_square_size:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT] and black_square_x < width - black_square_size:
             black_square_x += black_square_speed
 
         # Collision detection
@@ -100,8 +100,8 @@ while True:
         pygame.draw.rect(screen, red_square_color, (red_square_x, red_square_y, red_square_size, red_square_size))
 
         # Draw the black square
-        pygame.draw.rect(screen, black_square_color, (black_square_x, black_square_y, black_square_size,
-                                                      black_square_size))
+        pygame.draw.rect(screen, black_square_color,
+                         (black_square_x, black_square_y, black_square_size, black_square_size))
 
     # Update the display
     pygame.display.flip()
