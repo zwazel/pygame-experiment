@@ -31,12 +31,12 @@
 - Non AI Class
 - Allowed to use Google, Documentation, Stackoverflow, etc.
 - Not allowed to use Github Copilot, ChatGPT, Bard, etc.
-- (question: are they allowed to talk ot each other?)
+- as we're trying to simulate an exam, they're not allowed to talk to each other
 ### Afternoon
 - AI Class
 - Only allowed to use AI tools, like Github Copilot, ChatGPT, Bard, etc.
 - Not allowed to use Google, Documentation, Stackoverflow, etc.
-- (question: are they allowed to talk ot each other?)
+- as we're trying to simulate an exam, they're not allowed to talk to each other
 
 ## Todo for @Ash
 - Make game pretty
