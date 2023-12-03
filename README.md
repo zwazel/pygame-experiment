@@ -15,7 +15,7 @@
   - Save highscore to file (or database?) and load it when the game starts
   - Show highscore on game over screen
 
-## Optional for Students
+## Additional Ideas / Things to do
 - Powerups
   - Instead of only Obstacles, also have Powerups that you can collect that give you a special power for a moment
   - For example, a powerup that makes you invincible for a moment
