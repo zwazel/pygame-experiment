@@ -1,5 +1,6 @@
-import pygame
 import sys
+
+import pygame
 
 # Initialize Pygame
 pygame.init()
@@ -39,6 +40,9 @@ black_square_x = width // 2 - black_square_size // 2
 black_square_y = height - black_square_size - 10  # Start position near the bottom
 black_square_speed = 5
 
+# Define the start button
+button_rect = pygame.Rect(width // 2 - 100, height // 2 - 30, 200, 60)
+
 # Main game loop
 while True:
     for event in pygame.event.get():
@@ -46,14 +50,18 @@ while True:
             pygame.quit()
             sys.exit()
 
-        if current_state == MENU and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-            # Switch to the game state when the user presses Enter in the main menu
-            current_state = GAME
+        # Check for mouse button click
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            x, y = event.pos
+            if button_rect.collidepoint(x, y) and current_state == MENU:
+                # Switch to the game state when the user clicks the button in the main menu
+                current_state = GAME
 
     # Main menu
     if current_state == MENU:
         screen.fill(white)
-        text = font.render("Press Enter to Start", True, black)
+        pygame.draw.rect(screen, black, button_rect)
+        text = font.render("Start", True, white)
         screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
 
     # Game state
@@ -77,12 +85,13 @@ while True:
         black_rect = pygame.Rect(black_square_x, black_square_y, black_square_size, black_square_size)
 
         if red_rect.colliderect(black_rect):
-            print("Collision!")
-
             # Reset the positions of both squares
             red_square_y = 10
             black_square_x = width // 2 - black_square_size // 2
             black_square_y = height - black_square_size - 10
+
+            # Switch back to the menu state
+            current_state = MENU
 
         # Clear the screen
         screen.fill(white)
@@ -91,7 +100,8 @@ while True:
         pygame.draw.rect(screen, red_square_color, (red_square_x, red_square_y, red_square_size, red_square_size))
 
         # Draw the black square
-        pygame.draw.rect(screen, black_square_color, (black_square_x, black_square_y, black_square_size, black_square_size))
+        pygame.draw.rect(screen, black_square_color, (black_square_x, black_square_y, black_square_size,
+                                                      black_square_size))
 
     # Update the display
     pygame.display.flip()
