@@ -36,9 +36,9 @@ red_square_speed = 5
 # Set up the player square
 player_size = 50
 player_color = black
+player_x = width // 2 - player_size // 2
 player_y = height - player_size - 10  # Start position near the bottom
-player_lane_positions = [width // 4, width // 2, 3 * width // 4]  # Set positions for three lanes
-current_lane = 1  # Start in the middle lane
+player_speed = 65  # Discrete movement between three vertical lines
 
 # Define the start button
 button_rect = pygame.Rect(width // 2 - 100, height // 2 - 30, 200, 60)
@@ -73,14 +73,23 @@ while True:
         if red_square_y > height:
             red_square_y = -red_square_size
 
+        # Move the player square based on keyboard input
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a] and player_x > 0:
+            player_x -= player_speed
+        if keys[pygame.K_d] and player_x < width - player_size:
+            player_x += player_speed
+
         # Collision detection
         red_rect = pygame.Rect(red_square_x, red_square_y, red_square_size, red_square_size)
+        player_rect = pygame.Rect(player_x, player_y, player_size, player_size)
 
-        if red_rect.colliderect(player_lane_positions[current_lane], player_y, player_size, player_size):
+        if red_rect.colliderect(player_rect):
             print("Collision!")
 
-            # Reset the position of the red square
+            # Reset the positions of both squares
             red_square_y = 10
+            player_x = width // 2 - player_size // 2
 
             # Switch back to the menu state
             current_state = MENU
@@ -91,12 +100,16 @@ while True:
         # Draw the red square
         pygame.draw.rect(screen, red_square_color, (red_square_x, red_square_y, red_square_size, red_square_size))
 
-        # Draw the player square in the current lane
-        pygame.draw.rect(screen, player_color,
-                         (player_lane_positions[current_lane], height - player_size - 10, player_size, player_size))
+        # Draw the player square
+        pygame.draw.rect(screen, player_color, (player_x, player_y, player_size, player_size))
 
-        # Update the display
-        pygame.display.flip()
+        # Draw the three vertical lines
+        pygame.draw.line(screen, black, (width // 4, 0), (width // 4, height), 2)
+        pygame.draw.line(screen, black, (width // 2, 0), (width // 2, height), 2)
+        pygame.draw.line(screen, black, (3 * width // 4, 0), (3 * width // 4, height), 2)
+
+    # Update the display
+    pygame.display.flip()
 
     # Control the frame rate
     clock.tick(60)
