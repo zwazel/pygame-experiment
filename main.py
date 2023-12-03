@@ -8,7 +8,7 @@ pygame.init()
 # Set up the display
 width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Main Menu")
+pygame.display.set_caption("Pygame Experiment")
 
 # Set up fonts
 font = pygame.font.Font(None, 36)
@@ -44,10 +44,6 @@ black_square_speed = 5
 line1_x = width // 4
 line2_x = 3 * width // 4
 line_width = 10
-
-# Set up the jump variables
-jumping = False
-jump_count = 10
 
 # Define the start button
 button_rect = pygame.Rect(width // 2 - 100, height // 2 - 30, 200, 60)
@@ -89,21 +85,6 @@ while True:
         if keys[pygame.K_d] or keys[pygame.K_RIGHT] and black_square_x < width - black_square_size:
             black_square_x += black_square_speed
 
-        # Check for jump input
-        if not jumping:
-            if keys[pygame.K_SPACE]:
-                jumping = True
-        else:
-            if jump_count >= -10:
-                neg = 1
-                if jump_count < 0:
-                    neg = -1
-                black_square_y -= (jump_count ** 2) * 0.5 * neg
-                jump_count -= 1
-            else:
-                jumping = False
-                jump_count = 10
-
         # Ensure the player stays centered between the two lines
         if black_square_x < line1_x:
             black_square_x = line1_x
@@ -115,8 +96,6 @@ while True:
         black_rect = pygame.Rect(black_square_x, black_square_y, black_square_size, black_square_size)
 
         if red_rect.colliderect(black_rect):
-            print("Collision!")
-
             # Reset the positions of both squares
             red_square_y = 10
             black_square_x = width // 2 - black_square_size // 2
