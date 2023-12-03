@@ -33,12 +33,12 @@ red_square_x = width // 2 - red_square_size // 2
 red_square_y = 10  # Start position near the top
 red_square_speed = 5
 
-# Set up the black square
-black_square_size = 50
-black_square_color = black
-black_square_x = width // 2 - black_square_size // 2
-black_square_y = height - black_square_size - 10  # Start position near the bottom
-black_square_speed = 5
+# Set up the player square
+player_size = 50
+player_color = black
+player_y = height - player_size - 10  # Start position near the bottom
+player_lane_positions = [width // 4, width // 2, 3 * width // 4]  # Set positions for three lanes
+current_lane = 1  # Start in the middle lane
 
 # Define the start button
 button_rect = pygame.Rect(width // 2 - 100, height // 2 - 30, 200, 60)
@@ -73,22 +73,14 @@ while True:
         if red_square_y > height:
             red_square_y = -red_square_size
 
-        # Move the black square based on keyboard input
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_a] or keys[pygame.K_LEFT] and black_square_x > 0:
-            black_square_x -= black_square_speed
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT] and black_square_x < width - black_square_size:
-            black_square_x += black_square_speed
-
         # Collision detection
         red_rect = pygame.Rect(red_square_x, red_square_y, red_square_size, red_square_size)
-        black_rect = pygame.Rect(black_square_x, black_square_y, black_square_size, black_square_size)
 
-        if red_rect.colliderect(black_rect):
-            # Reset the positions of both squares
+        if red_rect.colliderect(player_lane_positions[current_lane], player_y, player_size, player_size):
+            print("Collision!")
+
+            # Reset the position of the red square
             red_square_y = 10
-            black_square_x = width // 2 - black_square_size // 2
-            black_square_y = height - black_square_size - 10
 
             # Switch back to the menu state
             current_state = MENU
@@ -99,12 +91,12 @@ while True:
         # Draw the red square
         pygame.draw.rect(screen, red_square_color, (red_square_x, red_square_y, red_square_size, red_square_size))
 
-        # Draw the black square
-        pygame.draw.rect(screen, black_square_color,
-                         (black_square_x, black_square_y, black_square_size, black_square_size))
+        # Draw the player square in the current lane
+        pygame.draw.rect(screen, player_color,
+                         (player_lane_positions[current_lane], height - player_size - 10, player_size, player_size))
 
-    # Update the display
-    pygame.display.flip()
+        # Update the display
+        pygame.display.flip()
 
     # Control the frame rate
     clock.tick(60)
