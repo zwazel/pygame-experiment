@@ -33,12 +33,21 @@ red_square_x = width // 2 - red_square_size // 2
 red_square_y = 10  # Start position near the top
 red_square_speed = 5
 
-# Set up the player square
-player_size = 50
-player_color = black
-player_x = width // 2 - player_size // 2
-player_y = height - player_size - 10  # Start position near the bottom
-player_speed = 65  # Discrete movement between three vertical lines
+# Set up the black square
+black_square_size = 50
+black_square_color = black
+black_square_x = width // 2 - black_square_size // 2
+black_square_y = height - black_square_size - 10  # Start position near the bottom
+black_square_speed = 5
+
+# Set up the vertical lines
+line1_x = width // 4
+line2_x = 3 * width // 4
+line_width = 10
+
+# Set up the jump variables
+jumping = False
+jump_count = 10
 
 # Define the start button
 button_rect = pygame.Rect(width // 2 - 100, height // 2 - 30, 200, 60)
@@ -73,23 +82,45 @@ while True:
         if red_square_y > height:
             red_square_y = -red_square_size
 
-        # Move the player square based on keyboard input
+        # Move the black square based on keyboard input
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a] and player_x > 0:
-            player_x -= player_speed
-        if keys[pygame.K_d] and player_x < width - player_size:
-            player_x += player_speed
+        if keys[pygame.K_a] or keys[pygame.K_LEFT] and black_square_x > 0:
+            black_square_x -= black_square_speed
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT] and black_square_x < width - black_square_size:
+            black_square_x += black_square_speed
+
+        # Check for jump input
+        if not jumping:
+            if keys[pygame.K_SPACE]:
+                jumping = True
+        else:
+            if jump_count >= -10:
+                neg = 1
+                if jump_count < 0:
+                    neg = -1
+                black_square_y -= (jump_count ** 2) * 0.5 * neg
+                jump_count -= 1
+            else:
+                jumping = False
+                jump_count = 10
+
+        # Ensure the player stays centered between the two lines
+        if black_square_x < line1_x:
+            black_square_x = line1_x
+        elif black_square_x + black_square_size > line2_x:
+            black_square_x = line2_x - black_square_size
 
         # Collision detection
         red_rect = pygame.Rect(red_square_x, red_square_y, red_square_size, red_square_size)
-        player_rect = pygame.Rect(player_x, player_y, player_size, player_size)
+        black_rect = pygame.Rect(black_square_x, black_square_y, black_square_size, black_square_size)
 
-        if red_rect.colliderect(player_rect):
+        if red_rect.colliderect(black_rect):
             print("Collision!")
 
             # Reset the positions of both squares
             red_square_y = 10
-            player_x = width // 2 - player_size // 2
+            black_square_x = width // 2 - black_square_size // 2
+            black_square_y = height - black_square_size - 10
 
             # Switch back to the menu state
             current_state = MENU
@@ -97,16 +128,16 @@ while True:
         # Clear the screen
         screen.fill(white)
 
+        # Draw the vertical lines
+        pygame.draw.rect(screen, black, (line1_x - line_width // 2, 0, line_width, height))
+        pygame.draw.rect(screen, black, (line2_x - line_width // 2, 0, line_width, height))
+
         # Draw the red square
         pygame.draw.rect(screen, red_square_color, (red_square_x, red_square_y, red_square_size, red_square_size))
 
-        # Draw the player square
-        pygame.draw.rect(screen, player_color, (player_x, player_y, player_size, player_size))
-
-        # Draw the three vertical lines
-        pygame.draw.line(screen, black, (width // 4, 0), (width // 4, height), 2)
-        pygame.draw.line(screen, black, (width // 2, 0), (width // 2, height), 2)
-        pygame.draw.line(screen, black, (3 * width // 4, 0), (3 * width // 4, height), 2)
+        # Draw the black square
+        pygame.draw.rect(screen, black_square_color, (black_square_x, black_square_y,
+                                                      black_square_size, black_square_size))
 
     # Update the display
     pygame.display.flip()
