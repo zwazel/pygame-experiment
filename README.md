@@ -10,9 +10,9 @@
 - Game over Screen
 - Scoring system, and show it at the game over screen, for example
   - Score increases over time?
-  - Increase score for every obstacle you pass?
+  - Increase score for every obstacle that passes you?
 - Highscore System
-  - Save highscore to file (or database?) and load it when the game starts
+  - Save highscore to file and load it when the game starts
   - Show highscore on game over screen
 
 ## Additional Ideas / Things to do
@@ -26,7 +26,8 @@
 - Make repo public
 
 ## Todo on Thursday
-- Explain what to do
+- Give a quick overview of what to do.
+- Set time limit (45 mins? 60 mins?)
 ### Morning
 - Non AI Class
 - Allowed to use Google, Documentation, Stackoverflow, etc.
