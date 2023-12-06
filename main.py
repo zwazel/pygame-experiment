@@ -1,36 +1,47 @@
 import sys
-
 import pygame
 
+# Set global width and height variables
 global width, height
 width, height = 800, 600
 
-
+# Define a class for the Spaceship sprite
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, image, size, x, y, speed):
         super().__init__()
+        # Load and scale the image
         self.image = pygame.transform.scale(pygame.image.load(image), size)
         self.rect = self.image.get_rect()
+        # Set initial position and speed
         self.rect.x = x
         self.rect.y = y
         self.speed = speed
 
-
+# Define a class for the Asteroid sprite
 class Asteroid(pygame.sprite.Sprite):
     def __init__(self, image, size, x, y, speed):
         super().__init__()
+        # Load and scale the image
         self.image = pygame.transform.scale(pygame.image.load(image), size)
         self.rect = self.image.get_rect()
+        # Set initial position and speed
         self.rect.x = x
         self.rect.y = y
         self.speed = speed
 
     def update(self):
+        # Update the position of the asteroid and reset if it goes off the screen
         self.rect.y += self.speed
         if self.rect.y > height:
             self.rect.y = -self.rect.height
 
+# Function to set the opacity of an image
+def set_image_opacity(image, opacity):
+    image = image.copy()
+    image.fill((255, 255, 255, int(opacity * 255)), None, pygame.BLEND_RGBA_MULT)
+    return image
 
+# Main function for the game
 def main():
     # Initialize Pygame
     pygame.init()
@@ -38,8 +49,18 @@ def main():
     # Set up the display
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Pygame Experiment")
+
+    # Load background image
     background_image = pygame.image.load("res/bg.png")
     background_image = pygame.transform.scale(background_image, (width, height))
+
+    # Load left and right border images
+    border_left_image = pygame.image.load("res/BorderL.png")
+    border_right_image = pygame.image.load("res/BorderR.png")
+
+    # Calculate positions to draw the borders more in the middle
+    border_left_x = (width - border_left_image.get_width()) // 5
+    border_right_x = 4 * (width - border_right_image.get_width()) // 5
 
     # Set up fonts
     font = pygame.font.Font(None, 36)
@@ -56,15 +77,12 @@ def main():
     GAME = 1
     current_state = MENU
 
+    # Create instances of Spaceship and Asteroid
     spaceship = Spaceship("res/SpaceShip.png", (75, 75), width // 2 - 37.5, height - 100, 5)
     asteroid = Asteroid("res/Asteroid1.png", (75, 75), width // 2 - 37.5, 10, 5)
 
+    # Create a sprite group for all sprites
     all_sprites = pygame.sprite.Group(spaceship, asteroid)
-
-    # Set up the vertical lines
-    line1_x = width // 5
-    line2_x = 4 * width // 5
-    line_width = 10
 
     # Define the start button
     button_rect = pygame.Rect(width // 2 - 100, height // 2 - 30, 200, 60)
@@ -100,10 +118,11 @@ def main():
                 spaceship.rect.x += spaceship.speed
 
             # Ensure the player stays centered between the two lines
-            if spaceship.rect.x < line1_x:
-                spaceship.rect.x = line1_x
-            elif spaceship.rect.x + spaceship.rect.width > line2_x:
-                spaceship.rect.x = line2_x - spaceship.rect.width
+            if spaceship.rect.x < border_left_x + 10:
+                spaceship.rect.x = border_left_x + 10
+            elif spaceship.rect.x + spaceship.rect.width > border_right_x:
+                spaceship.rect.x = border_right_x - spaceship.rect.width
+
             # Collision detection
             if pygame.sprite.spritecollide(spaceship, [asteroid], False):
                 asteroid.rect.y = 10
@@ -112,13 +131,13 @@ def main():
                 # Switch back to the menu state
                 current_state = MENU
 
-
             screen.blit(background_image, (0, 0))
 
             # Draw the vertical lines
-            pygame.draw.rect(screen, black, (line1_x - line_width // 2, 0, line_width, height))
-            pygame.draw.rect(screen, black, (line2_x - line_width // 2, 0, line_width, height))
+            screen.blit(border_left_image, (border_left_x, 0))
+            screen.blit(border_right_image, (border_right_x, 0))
 
+            # Update and draw all sprites
             all_sprites.update()
             all_sprites.draw(screen)
 
