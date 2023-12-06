@@ -36,9 +36,10 @@ def main():
     pygame.init()
 
     # Set up the display
-    width, height = 800, 600
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Pygame Experiment")
+    background_image = pygame.image.load("res/bg.png")
+    background_image = pygame.transform.scale(background_image, (width, height))
 
     # Set up fonts
     font = pygame.font.Font(None, 36)
@@ -61,8 +62,8 @@ def main():
     all_sprites = pygame.sprite.Group(spaceship, asteroid)
 
     # Set up the vertical lines
-    line1_x = width // 4
-    line2_x = 3 * width // 4
+    line1_x = width // 5
+    line2_x = 4 * width // 5
     line_width = 10
 
     # Define the start button
@@ -84,7 +85,7 @@ def main():
 
         # Main menu
         if current_state == MENU:
-            screen.fill(white)
+            screen.blit(background_image, (0, 0))
             pygame.draw.rect(screen, black, button_rect)
             text = font.render("Start", True, white)
             screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
@@ -111,8 +112,8 @@ def main():
                 # Switch back to the menu state
                 current_state = MENU
 
-            # Clear the screen
-            screen.fill(white)
+
+            screen.blit(background_image, (0, 0))
 
             # Draw the vertical lines
             pygame.draw.rect(screen, black, (line1_x - line_width // 2, 0, line_width, height))
