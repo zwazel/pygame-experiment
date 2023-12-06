@@ -20,6 +20,7 @@
   - Instead of only Obstacles, also have Powerups that you can collect that give you a special power for a moment
   - For example, a powerup that makes you invincible for a moment
 - Sound Effects
+- Randomize Asteroids that spawn in (Asteroid2-4.png)
 
 ## Todo for thursday
 - Get survey ready

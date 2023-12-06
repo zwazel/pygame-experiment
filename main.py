@@ -1,23 +1,74 @@
 import sys
-
 import pygame
 
+# Set global width and height variables
+global width, height
+width, height = 800, 600
 
+# Define a class for the Spaceship sprite
+class Spaceship(pygame.sprite.Sprite):
+    def __init__(self, image, size, x, y, speed):
+        super().__init__()
+        # Load and scale the image
+        self.image = pygame.transform.scale(pygame.image.load(image), size)
+        self.rect = self.image.get_rect()
+        # Set initial position and speed
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = speed
+
+# Define a class for the Asteroid sprite
+class Asteroid(pygame.sprite.Sprite):
+    def __init__(self, image, size, x, y, speed):
+        super().__init__()
+        # Load and scale the image
+        self.image = pygame.transform.scale(pygame.image.load(image), size)
+        self.rect = self.image.get_rect()
+        # Set initial position and speed
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = speed
+
+    def update(self):
+        # Update the position of the asteroid and reset if it goes off the screen
+        self.rect.y += self.speed
+        if self.rect.y > height:
+            self.rect.y = -self.rect.height
+
+# Function to set the opacity of an image
+def set_image_opacity(image, opacity):
+    image = image.copy()
+    image.fill((255, 255, 255, int(opacity * 255)), None, pygame.BLEND_RGBA_MULT)
+    return image
+
+# Main function for the game
 def main():
     # Initialize Pygame
     pygame.init()
 
     # Set up the display
-    width, height = 800, 600
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Pygame Experiment")
+
+    # Load background image
+    background_image = pygame.image.load("res/bg.png")
+    background_image = pygame.transform.scale(background_image, (width, height))
+
+    # Load a single border image
+    border_image = pygame.image.load("res/Border.png")
+
+    # Mirror the border image horizontally
+    mirrored_border_image = pygame.transform.flip(border_image, True, False)
+
+    # Calculate positions to draw the borders more in the middle
+    border_left_x = (width - border_image.get_width()) // 5
+    border_right_x = 4 * (width - border_image.get_width()) // 5
 
     # Set up fonts
     font = pygame.font.Font(None, 36)
 
     # Define colors
     white = (255, 255, 255)
-    red = (255, 0, 0)
     black = (0, 0, 0)
 
     # Set up the clock for controlling the frame rate
@@ -28,24 +79,12 @@ def main():
     GAME = 1
     current_state = MENU
 
-    # Set up the red square
-    red_square_size = 50
-    red_square_color = red
-    red_square_x = width // 2 - red_square_size // 2
-    red_square_y = 10  # Start position near the top
-    red_square_speed = 5
+    # Create instances of Spaceship and Asteroid
+    spaceship = Spaceship("res/SpaceShip.png", (75, 75), width // 2 - 37.5, height - 100, 5)
+    asteroid = Asteroid("res/Asteroid1.png", (75, 75), width // 2 - 37.5, 10, 5)
 
-    # Set up the black square
-    black_square_size = 50
-    black_square_color = black
-    black_square_x = width // 2 - black_square_size // 2
-    black_square_y = height - black_square_size - 10  # Start position near the bottom
-    black_square_speed = 5
-
-    # Set up the vertical lines
-    line1_x = width // 4
-    line2_x = 3 * width // 4
-    line_width = 10
+    # Create a sprite group for all sprites
+    all_sprites = pygame.sprite.Group(spaceship, asteroid)
 
     # Define the start button
     button_rect = pygame.Rect(width // 2 - 100, height // 2 - 30, 200, 60)
@@ -66,59 +105,43 @@ def main():
 
         # Main menu
         if current_state == MENU:
-            screen.fill(white)
+            screen.blit(background_image, (0, 0))
             pygame.draw.rect(screen, black, button_rect)
             text = font.render("Start", True, white)
             screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
 
         # Game state
         elif current_state == GAME:
-            # Move the red square down
-            red_square_y += red_square_speed
-
-            # Wrap around to the top when the red square goes off the bottom of the screen
-            if red_square_y > height:
-                red_square_y = -red_square_size
-
-            # Move the black square based on keyboard input
+            # Move the Spaceship
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_a] or keys[pygame.K_LEFT] and black_square_x > 0:
-                black_square_x -= black_square_speed
-            if keys[pygame.K_d] or keys[pygame.K_RIGHT] and black_square_x < width - black_square_size:
-                black_square_x += black_square_speed
+            if keys[pygame.K_a] or keys[pygame.K_LEFT] and spaceship.rect.x > 0:
+                spaceship.rect.x -= spaceship.speed
+            if keys[pygame.K_d] or keys[pygame.K_RIGHT] and spaceship.rect.x < width - spaceship.rect.width:
+                spaceship.rect.x += spaceship.speed
 
             # Ensure the player stays centered between the two lines
-            if black_square_x < line1_x:
-                black_square_x = line1_x
-            elif black_square_x + black_square_size > line2_x:
-                black_square_x = line2_x - black_square_size
+            if spaceship.rect.x < border_left_x + 10:
+                spaceship.rect.x = border_left_x + 10
+            elif spaceship.rect.x + spaceship.rect.width > border_right_x:
+                spaceship.rect.x = border_right_x - spaceship.rect.width
 
             # Collision detection
-            red_rect = pygame.Rect(red_square_x, red_square_y, red_square_size, red_square_size)
-            black_rect = pygame.Rect(black_square_x, black_square_y, black_square_size, black_square_size)
-
-            if red_rect.colliderect(black_rect):
-                # Reset the positions of both squares
-                red_square_y = 10
-                black_square_x = width // 2 - black_square_size // 2
-                black_square_y = height - black_square_size - 10
-
+            if pygame.sprite.spritecollide(spaceship, [asteroid], False):
+                asteroid.rect.y = 10
+                spaceship.rect.x = width // 2 - spaceship.rect.width // 2
+                spaceship.rect.y = height - spaceship.rect.height - 10
                 # Switch back to the menu state
                 current_state = MENU
 
-            # Clear the screen
-            screen.fill(white)
+            screen.blit(background_image, (0, 0))
 
             # Draw the vertical lines
-            pygame.draw.rect(screen, black, (line1_x - line_width // 2, 0, line_width, height))
-            pygame.draw.rect(screen, black, (line2_x - line_width // 2, 0, line_width, height))
+            screen.blit(border_image, (border_left_x, 0))
+            screen.blit(mirrored_border_image, (border_right_x, 0))
 
-            # Draw the red square
-            pygame.draw.rect(screen, red_square_color, (red_square_x, red_square_y, red_square_size, red_square_size))
-
-            # Draw the black square
-            pygame.draw.rect(screen, black_square_color, (black_square_x, black_square_y,
-                                                          black_square_size, black_square_size))
+            # Update and draw all sprites
+            all_sprites.update()
+            all_sprites.draw(screen)
 
         # Update the display
         pygame.display.flip()
