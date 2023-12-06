@@ -54,13 +54,15 @@ def main():
     background_image = pygame.image.load("res/bg.png")
     background_image = pygame.transform.scale(background_image, (width, height))
 
-    # Load left and right border images
-    border_left_image = pygame.image.load("res/BorderL.png")
-    border_right_image = pygame.image.load("res/BorderR.png")
+    # Load a single border image
+    border_image = pygame.image.load("res/Border.png")
+
+    # Mirror the border image horizontally
+    mirrored_border_image = pygame.transform.flip(border_image, True, False)
 
     # Calculate positions to draw the borders more in the middle
-    border_left_x = (width - border_left_image.get_width()) // 5
-    border_right_x = 4 * (width - border_right_image.get_width()) // 5
+    border_left_x = (width - border_image.get_width()) // 5
+    border_right_x = 4 * (width - border_image.get_width()) // 5
 
     # Set up fonts
     font = pygame.font.Font(None, 36)
@@ -134,8 +136,8 @@ def main():
             screen.blit(background_image, (0, 0))
 
             # Draw the vertical lines
-            screen.blit(border_left_image, (border_left_x, 0))
-            screen.blit(border_right_image, (border_right_x, 0))
+            screen.blit(border_image, (border_left_x, 0))
+            screen.blit(mirrored_border_image, (border_right_x, 0))
 
             # Update and draw all sprites
             all_sprites.update()
