@@ -5,6 +5,7 @@ import pygame
 global width, height
 width, height = 800, 600
 
+
 # Define a class for the Spaceship sprite
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, image, size, x, y, speed):
@@ -16,6 +17,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.speed = speed
+
 
 # Define a class for the Asteroid sprite
 class Asteroid(pygame.sprite.Sprite):
@@ -35,11 +37,13 @@ class Asteroid(pygame.sprite.Sprite):
         if self.rect.y > height:
             self.rect.y = -self.rect.height
 
+
 # Function to set the opacity of an image
 def set_image_opacity(image, opacity):
     image = image.copy()
     image.fill((255, 255, 255, int(opacity * 255)), None, pygame.BLEND_RGBA_MULT)
     return image
+
 
 # Main function for the game
 def main():
